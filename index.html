@@ -445,14 +445,6 @@
       color: #6b2e0a;
     }
 
-    .submit-frame {
-      width: 0;
-      height: 0;
-      border: 0;
-      visibility: hidden;
-      position: absolute;
-    }
-
     @keyframes rise {
       from {
         opacity: 0;
@@ -582,7 +574,6 @@
 
             <form
               id="beer-form"
-              method="GET"
               accept-charset="UTF-8"
             >
               <input type="hidden" id="submitted-answer" name="answer" value="Evet">
@@ -627,7 +618,6 @@
 
               <p class="result" id="result"></p>
             </form>
-            <iframe class="submit-frame" name="submit-frame" id="submit-frame" title="Form Gonderimi"></iframe>
           </div>
         </section>
       </section>
@@ -646,8 +636,7 @@
     const geoButton = document.getElementById("geo-btn");
     const locationField = document.getElementById("location");
     const submittedAt = document.getElementById("submitted-at");
-    const submitFrame = document.getElementById("submit-frame");
-    const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyDxWH1zSDON91uqaQnbco2ytfAZ28y8gi990yskssHwd0At9EKQRkXsQjQClZdD5iWlQ/exec";
+    const WHATSAPP_NUMBER = "905394603445";
 
     const playfulReplies = [
       "Hay&#305;r butonu yine ka&ccedil;t&#305;.",
@@ -659,7 +648,6 @@
 
     let dodgeCount = 0;
     let noScale = 1;
-    let formSubmitted = false;
 
     function updateNoButtonPosition() {
       const arenaRect = arena.getBoundingClientRect();
@@ -699,23 +687,27 @@
       successPanel.scrollIntoView({ behavior: "smooth", block: "start" });
     }
 
-    function submitForm() {
-      resultText.innerHTML = "G&ouml;nderiliyor...";
+    function submitForm(event) {
+      event.preventDefault();
+      resultText.innerHTML = "WhatsApp haz&#305;rlan&#305;yor...";
       submittedAt.value = new Date().toISOString();
-      const params = new URLSearchParams(new FormData(beerForm));
-      formSubmitted = true;
-      submitFrame.src = APPS_SCRIPT_URL + "?" + params.toString() + "&_ts=" + Date.now();
-    }
+      const formData = new FormData(beerForm);
+      const message = [
+        "Bira Oyunu formu geldi:",
+        "",
+        "Isim: " + (formData.get("isim") || ""),
+        "Soyisim: " + (formData.get("soyisim") || ""),
+        "Zaman: " + (formData.get("zaman") || ""),
+        "Telefon: " + (formData.get("telefon") || ""),
+        "Konum: " + (formData.get("konum") || ""),
+        "Onay: " + (formData.get("onay") || ""),
+        "Cevap: " + (formData.get("answer") || ""),
+        "Gonderim zamani: " + (formData.get("submitted_at") || "")
+      ].join("\n");
 
-    function handleFrameLoad() {
-      if (!formSubmitted) {
-        return;
-      }
-
-      beerForm.reset();
-      submittedAt.value = "";
-      resultText.innerHTML = "Bilgiler g&ouml;nderildi.";
-      formSubmitted = false;
+      const whatsappUrl = "https://wa.me/" + WHATSAPP_NUMBER + "?text=" + encodeURIComponent(message);
+      window.open(whatsappUrl, "_blank", "noopener");
+      resultText.innerHTML = "WhatsApp penceresi a&ccedil;&#305;ld&#305;.";
     }
 
     function fillWithGeolocation() {
@@ -752,7 +744,6 @@
     noButton.addEventListener("mouseenter", dodgeNoButton);
     yesButton.addEventListener("click", chooseYes);
     beerForm.addEventListener("submit", submitForm);
-    submitFrame.addEventListener("load", handleFrameLoad);
     geoButton.addEventListener("click", fillWithGeolocation);
   </script>
 </body>
