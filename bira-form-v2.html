@@ -593,7 +593,7 @@
               <h2>Do&#287;ru se&ccedil;imi yapt&#305;n</h2>
             </div>
             <p id="success-copy">
-              Harika. A&#351;a&#287;&#305;daki Google Form&apos;u doldur; cevaplar direkt senin forma ve ba&#287;l&#305; sheet&apos;e d&uuml;&#351;ecek.
+              Harika. A&#351;a&#287;&#305;daki Google Form&apos;u doldur; cevaplar direkt senin forma ve ba&#287;l&#305; sheet&apos;e d&uuml;&#351;ecek. Telefon numaran&#305; ya da insta hesab&#305;n&#305; da b&#305;rakmay&#305; unutma.
             </p>
 
             <div class="actions">
@@ -630,42 +630,85 @@
     const playfulReplies = [
       "Hay&#305;r butonu yine ka&ccedil;t&#305;.",
       "Olmad&#305;, bir daha dene bakal&#305;m.",
-      "Hay&#305;r bu oyunda biraz &ccedil;ok nazl&#305;.",
-      "Buton seni troll&uuml;yor olabilir.",
-      "Bu gidi&#351;le EVET daha mant&#305;kl&#305; duruyor."
+      "Bu k&#305;rm&#305;z&#305; buton tam bir ka&ccedil;ak.",
+      "Bir an durmu&#351; gibi yapt&#305;, sonra yine gitti.",
+      "Hay&#305;r taraf&#305; k&uuml;&ccedil;&uuml;k oyunlar pe&#351;inde.",
+      "Buton seni hafiften troll&uuml;yor olabilir.",
+      "Bu kadar ka&ccedil;mas&#305; biraz manidar oldu.",
+      "Art&#305;k EVET&apos;in etraf&#305;nda dolanmaya ba&#351;lad&#305;.",
+      "Hay&#305;r se&ccedil;ene&#287;i iyice panik moduna ge&ccedil;ti.",
+      "Kendine g&uuml;veni azald&#305;k&ccedil;a k&uuml;&ccedil;&uuml;l&uuml;yor.",
+      "Bu gidi&#351;le do&#287;ru cevap seni bulacak.",
+      "Ekranda ama bir t&uuml;rl&uuml; yerinde durmuyor.",
+      "Ka&ccedil;t&#305;k&ccedil;a EVET&apos;e daha da yakla&#351;&#305;yor.",
+      "Az sonra iyice EVET&apos;in dibine yap&#305;&#351;acak.",
+      "Baya&#287;&#305; &ccedil;&ouml;z&uuml;ld&uuml;; ka&ccedil;acak yer bulam&#305;yor."
     ];
 
     let dodgeCount = 0;
     let noScale = 1;
+
+    function clamp(value, min, max) {
+      return Math.min(max, Math.max(min, value));
+    }
+
+    function getStatusLine() {
+      const index = (dodgeCount - 1) % playfulReplies.length;
+      const extra = dodgeCount > playfulReplies.length ? " Hamle " + dodgeCount + "." : "";
+      return playfulReplies[index] + extra;
+    }
 
     function updateNoButtonPosition() {
       const arenaRect = arena.getBoundingClientRect();
       const buttonRect = noButton.getBoundingClientRect();
       const maxX = Math.max(10, arenaRect.width - buttonRect.width - 10);
       const maxY = Math.max(10, arenaRect.height - buttonRect.height - 10);
-      const nextX = Math.random() * maxX;
-      const nextY = Math.random() * maxY;
+      let nextX = Math.random() * maxX;
+      let nextY = Math.random() * maxY;
 
-      noButton.style.left = nextX + "px";
-      noButton.style.top = nextY + "px";
+      const shouldHugYes = dodgeCount >= 4 && Math.random() < Math.min(0.9, 0.34 + (dodgeCount * 0.07));
+
+      if (shouldHugYes) {
+        const yesRect = yesButton.getBoundingClientRect();
+        const yesX = yesRect.left - arenaRect.left;
+        const yesY = yesRect.top - arenaRect.top;
+        const angle = Math.random() * Math.PI * 2;
+        const orbit = Math.max(8, 40 - (dodgeCount * 3));
+
+        nextX = yesX + (yesRect.width / 2) + (Math.cos(angle) * orbit) - (buttonRect.width / 2);
+        nextY = yesY + (yesRect.height / 2) + (Math.sin(angle) * orbit) - (buttonRect.height / 2);
+      }
+
+      noButton.style.left = clamp(nextX, 10, maxX) + "px";
+      noButton.style.top = clamp(nextY, 10, maxY) + "px";
     }
 
     function dodgeNoButton() {
       dodgeCount += 1;
       noScale = Math.max(0.18, noScale * 0.82);
+      const yesScale = Math.min(7.2, 1 + (dodgeCount * 0.22));
 
       noButton.style.transform = "scale(" + noScale + ") rotate(" + ((Math.random() * 18) - 9) + "deg)";
       noButton.style.opacity = String(Math.max(0.34, noScale + 0.1));
       updateNoButtonPosition();
 
-      statusText.innerHTML = playfulReplies[dodgeCount % playfulReplies.length];
-      yesButton.style.transform = "translateY(-3px) scale(" + (1 + (dodgeCount * 0.03)) + ")";
-      yesButton.style.boxShadow = "0 20px 32px rgba(36, 142, 73, 0.28)";
+      statusText.innerHTML = getStatusLine();
+      yesButton.style.transform = "translateY(-3px) scale(" + yesScale + ")";
+      yesButton.style.boxShadow = "0 28px 42px rgba(36, 142, 73, 0.32)";
+
+      if (dodgeCount >= 10) {
+        yesButton.style.left = "50%";
+        yesButton.style.top = "50%";
+        yesButton.style.bottom = "auto";
+        yesButton.style.transform = "translate(-50%, -50%) scale(8.5)";
+        yesButton.style.zIndex = "3";
+        noButton.style.zIndex = "4";
+      }
     }
 
     function chooseYes() {
       statusText.innerHTML = "Tamam, do&#287;ru cevap bulundu.";
-      successCopy.innerHTML = "Do&#287;ru se&ccedil;imi yapt&#305;n. Formu a&#351;a&#287;&#305;dan doldur; cevaplar do&#287;rudan Google Form taraf&#305;na gider.";
+      successCopy.innerHTML = "Do&#287;ru se&ccedil;imi yapt&#305;n. Formu a&#351;a&#287;&#305;dan doldur; cevaplar do&#287;rudan Google Form taraf&#305;na gider. Telefon numaran&#305; ya da insta hesab&#305;n&#305; da ekle.";
       successPanel.classList.add("active");
       yesButton.disabled = true;
       noButton.disabled = true;
