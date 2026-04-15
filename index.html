@@ -582,8 +582,7 @@
 
             <form
               id="beer-form"
-              method="POST"
-              target="submit-frame"
+              method="GET"
               accept-charset="UTF-8"
             >
               <input type="hidden" id="submitted-answer" name="answer" value="Evet">
@@ -703,8 +702,9 @@
     function submitForm() {
       resultText.innerHTML = "G&ouml;nderiliyor...";
       submittedAt.value = new Date().toISOString();
-      beerForm.action = APPS_SCRIPT_URL;
+      const params = new URLSearchParams(new FormData(beerForm));
       formSubmitted = true;
+      submitFrame.src = APPS_SCRIPT_URL + "?" + params.toString() + "&_ts=" + Date.now();
     }
 
     function handleFrameLoad() {
