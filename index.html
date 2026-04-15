@@ -445,6 +445,14 @@
       color: #6b2e0a;
     }
 
+    .submit-frame {
+      width: 0;
+      height: 0;
+      border: 0;
+      visibility: hidden;
+      position: absolute;
+    }
+
     @keyframes rise {
       from {
         opacity: 0;
@@ -575,6 +583,8 @@
             <form
               id="beer-form"
               method="POST"
+              target="submit-frame"
+              accept-charset="UTF-8"
             >
               <input type="hidden" id="submitted-answer" name="answer" value="Evet">
               <input type="hidden" id="submitted-at" name="submitted_at" value="">
@@ -618,6 +628,7 @@
 
               <p class="result" id="result"></p>
             </form>
+            <iframe class="submit-frame" name="submit-frame" id="submit-frame" title="Form Gonderimi"></iframe>
           </div>
         </section>
       </section>
@@ -636,6 +647,7 @@
     const geoButton = document.getElementById("geo-btn");
     const locationField = document.getElementById("location");
     const submittedAt = document.getElementById("submitted-at");
+    const submitFrame = document.getElementById("submit-frame");
     const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyDxWH1zSDON91uqaQnbco2ytfAZ28y8gi990yskssHwd0At9EKQRkXsQjQClZdD5iWlQ/exec";
 
     const playfulReplies = [
@@ -648,6 +660,7 @@
 
     let dodgeCount = 0;
     let noScale = 1;
+    let formSubmitted = false;
 
     function updateNoButtonPosition() {
       const arenaRect = arena.getBoundingClientRect();
@@ -687,30 +700,22 @@
       successPanel.scrollIntoView({ behavior: "smooth", block: "start" });
     }
 
-    function serialize(form) {
-      const formData = new FormData(form);
-      return new URLSearchParams(formData).toString();
-    }
-
-    async function submitForm(event) {
-      event.preventDefault();
+    function submitForm() {
       resultText.innerHTML = "G&ouml;nderiliyor...";
       submittedAt.value = new Date().toISOString();
+      beerForm.action = APPS_SCRIPT_URL;
+      formSubmitted = true;
+    }
 
-      try {
-        await fetch(APPS_SCRIPT_URL, {
-          method: "POST",
-          mode: "no-cors",
-          headers: { "Content-Type": "application/x-www-form-urlencoded" },
-          body: serialize(beerForm)
-        });
-
-        beerForm.reset();
-        submittedAt.value = "";
-        resultText.innerHTML = "Bilgiler g&ouml;nderildi.";
-      } catch (error) {
-        resultText.innerHTML = "G&ouml;nderim olmad&#305;. Ba&#287;lant&#305;y&#305; ve yay&#305;n ayar&#305;n&#305; tekrar kontrol et.";
+    function handleFrameLoad() {
+      if (!formSubmitted) {
+        return;
       }
+
+      beerForm.reset();
+      submittedAt.value = "";
+      resultText.innerHTML = "Bilgiler g&ouml;nderildi.";
+      formSubmitted = false;
     }
 
     function fillWithGeolocation() {
@@ -747,6 +752,7 @@
     noButton.addEventListener("mouseenter", dodgeNoButton);
     yesButton.addEventListener("click", chooseYes);
     beerForm.addEventListener("submit", submitForm);
+    submitFrame.addEventListener("load", handleFrameLoad);
     geoButton.addEventListener("click", fillWithGeolocation);
   </script>
 </body>
