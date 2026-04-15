@@ -432,41 +432,86 @@
       border: 1px solid rgba(80, 39, 13, 0.12);
     }
 
-    .open-form-btn {
-      position: static;
-      min-height: 56px;
-      min-width: 220px;
-      background: linear-gradient(180deg, #6d3fff, #4120c8);
-      color: #fffef8;
-    }
-
     .form-shell {
       margin-top: 22px;
-      padding: 14px;
-      border-radius: 24px;
-      background: rgba(255, 255, 255, 0.46);
-      border: 1px solid rgba(123, 61, 16, 0.1);
+      padding: 18px;
+      border-radius: 28px;
+      background:
+        linear-gradient(180deg, rgba(255, 252, 240, 0.92), rgba(255, 244, 214, 0.82));
+      border: 1px solid rgba(123, 61, 16, 0.12);
+      box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.72),
+        0 16px 30px rgba(91, 45, 12, 0.08);
     }
 
-    .form-frame {
-      width: 100%;
-      min-height: 920px;
+    .form-shell-head {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .form-kicker {
+      margin: 0;
+      font-size: 0.82rem;
+      font-weight: 900;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: #8b4614;
+    }
+
+    .form-caption {
+      margin: 0;
+      max-width: 38ch;
+      font-size: 0.95rem;
+      line-height: 1.45;
+      color: rgba(72, 37, 17, 0.7);
+    }
+
+    .form-surface {
+      padding: clamp(16px, 3vw, 24px);
+      border-radius: 24px;
+      background: rgba(255, 255, 255, 0.82);
+      box-shadow:
+        inset 0 0 0 1px rgba(165, 91, 24, 0.1),
+        0 10px 24px rgba(126, 64, 16, 0.08);
+    }
+
+    .native-form {
+      display: block;
+    }
+
+    .hidden-form-target {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      opacity: 0;
+      pointer-events: none;
       border: 0;
-      border-radius: 20px;
-      background: #fff;
     }
 
     .result {
       margin-top: 14px;
-      font-size: 0.95rem;
-      color: rgba(72, 37, 17, 0.72);
-      line-height: 1.5;
-    }
-
-    .result {
       min-height: 24px;
+      font-size: 0.95rem;
+      line-height: 1.5;
       font-weight: 800;
       color: #6b2e0a;
+      opacity: 0;
+      transform: translateY(4px);
+      transition: opacity 0.18s ease, transform 0.18s ease;
+    }
+
+    .result.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .submit-btn:disabled {
+      cursor: wait;
+      opacity: 0.75;
     }
 
     @keyframes rise {
@@ -593,21 +638,64 @@
               <h2>Do&#287;ru se&ccedil;imi yapt&#305;n</h2>
             </div>
             <p id="success-copy">
-              Harika. A&#351;a&#287;&#305;daki Google Form&apos;u doldur; cevaplar direkt senin forma ve ba&#287;l&#305; sheet&apos;e d&uuml;&#351;ecek. Telefon numaran&#305; ya da insta hesab&#305;n&#305; da b&#305;rakmay&#305; unutma.
+              Harika. Bilgileri direkt buradaki kutulara yaz; cevaplar arka tarafta ayn&#305; Google Form&apos;a d&uuml;&#351;ecek. Telefon numaran&#305; ya da insta hesab&#305;n&#305; da b&#305;rakmay&#305; unutma.
             </p>
 
-            <div class="actions">
-              <button class="btn open-form-btn" id="open-form-btn" type="button">Formu Yeni Sekmede A&ccedil;</button>
-            </div>
-
             <div class="form-shell">
-              <iframe
-                class="form-frame"
-                id="form-frame"
-                title="Bira Oyunu Formu"
-                src=""
-                loading="lazy"
-              ></iframe>
+              <div class="form-shell-head">
+                <p class="form-kicker">Mini final turu</p>
+                <p class="form-caption">Sayfadan c&#305;kmadan doldur; bilgiler do&#287;rudan mevcut Google Form&apos;una gider.</p>
+              </div>
+
+              <div class="form-surface">
+                <form
+                  class="native-form"
+                  id="native-form"
+                  action="https://docs.google.com/forms/d/e/1FAIpQLSdHJ7VHsQnjoc_1jP40bt_xx33fY1NGJHDVfdzHChC1TU5XuA/formResponse"
+                  method="POST"
+                  target="hidden-form-target"
+                >
+                  <input type="hidden" name="fvv" value="1">
+                  <input type="hidden" name="pageHistory" value="0">
+                  <input type="hidden" name="fbzx" value="-7544876329973130461">
+                  <input type="hidden" name="submissionTimestamp" value="-1">
+
+                  <div class="form-grid">
+                    <div class="field">
+                      <label for="isim-field">&#304;sim</label>
+                      <input id="isim-field" name="entry.1447870180" type="text" autocomplete="given-name" required>
+                    </div>
+
+                    <div class="field">
+                      <label for="soyisim-field">Soyisim</label>
+                      <input id="soyisim-field" name="entry.250154350" type="text" autocomplete="family-name" required>
+                    </div>
+
+                    <div class="field">
+                      <label for="zaman-field">Zaman</label>
+                      <input id="zaman-field" name="entry.703402808" type="text" placeholder="Mesela cuma 21.00 gibi" required>
+                    </div>
+
+                    <div class="field">
+                      <label for="iletisim-field">&#304;leti&#351;im</label>
+                      <input id="iletisim-field" name="entry.1617349891" type="text" placeholder="Telefon numarasi ya da Instagram" required>
+                    </div>
+
+                    <div class="field full">
+                      <label for="konum-field">Konum</label>
+                      <input id="konum-field" name="entry.13018681" type="text" placeholder="Bulusmak istedigin yer" required>
+                    </div>
+                  </div>
+
+                  <div class="actions">
+                    <button class="btn submit-btn" id="submit-btn" type="submit">Bilgileri G&ouml;nder</button>
+                  </div>
+
+                  <p class="result" id="form-result" aria-live="polite"></p>
+                </form>
+              </div>
+
+              <iframe class="hidden-form-target" name="hidden-form-target" id="hidden-form-target" title="Gizli form hedefi"></iframe>
             </div>
           </div>
         </section>
@@ -622,10 +710,10 @@
     const statusText = document.getElementById("status");
     const successPanel = document.getElementById("success-panel");
     const successCopy = document.getElementById("success-copy");
-    const formFrame = document.getElementById("form-frame");
-    const openFormButton = document.getElementById("open-form-btn");
-    const GOOGLE_FORM_VIEW_URL = "https://docs.google.com/forms/d/e/1FAIpQLSdHJ7VHsQnjoc_1jP40bt_xx33fY1NGJHDVfdzHChC1TU5XuA/viewform";
-    const GOOGLE_FORM_EMBED_URL = GOOGLE_FORM_VIEW_URL + "?embedded=true";
+    const nativeForm = document.getElementById("native-form");
+    const submitButton = document.getElementById("submit-btn");
+    const formResult = document.getElementById("form-result");
+    const hiddenFormTarget = document.getElementById("hidden-form-target");
 
     const playfulReplies = [
       "Hay&#305;r butonu yine ka&ccedil;t&#305;.",
@@ -647,6 +735,9 @@
 
     let dodgeCount = 0;
     let noScale = 1;
+    let pendingFormSubmit = false;
+    let ignoreHiddenFrameBoot = true;
+    let submitFallbackTimer;
 
     function clamp(value, min, max) {
       return Math.min(max, Math.max(min, value));
@@ -708,21 +799,65 @@
 
     function chooseYes() {
       statusText.innerHTML = "Tamam, do&#287;ru cevap bulundu.";
-      successCopy.innerHTML = "Do&#287;ru se&ccedil;imi yapt&#305;n. Formu a&#351;a&#287;&#305;dan doldur; cevaplar do&#287;rudan Google Form taraf&#305;na gider. Telefon numaran&#305; ya da insta hesab&#305;n&#305; da ekle.";
+      successCopy.innerHTML = "Do&#287;ru se&ccedil;imi yapt&#305;n. Bilgileri direkt a&#351;a&#287;&#305;daki kutulara yaz; cevaplar arka tarafta senin Google Form&apos;una gider. Telefon numaran&#305; ya da insta hesab&#305;n&#305; da ekle.";
       successPanel.classList.add("active");
       yesButton.disabled = true;
       noButton.disabled = true;
       yesButton.style.opacity = "0.6";
       noButton.style.opacity = "0.2";
-      formFrame.src = GOOGLE_FORM_EMBED_URL;
+      nativeForm.reset();
+      formResult.textContent = "";
+      formResult.classList.remove("show");
+      submitButton.disabled = false;
+      submitButton.textContent = "Bilgileri G\u00f6nder";
       successPanel.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+
+    function finishFormSubmit(message) {
+      pendingFormSubmit = false;
+      clearTimeout(submitFallbackTimer);
+      nativeForm.reset();
+      submitButton.disabled = false;
+      submitButton.textContent = "Bilgileri G\u00f6nder";
+      formResult.textContent = message;
+      formResult.classList.add("show");
     }
 
     noButton.addEventListener("click", dodgeNoButton);
     noButton.addEventListener("mouseenter", dodgeNoButton);
     yesButton.addEventListener("click", chooseYes);
-    openFormButton.addEventListener("click", () => {
-      window.open(GOOGLE_FORM_VIEW_URL, "_blank", "noopener");
+
+    nativeForm.addEventListener("submit", (event) => {
+      if (!nativeForm.reportValidity()) {
+        event.preventDefault();
+        return;
+      }
+
+      pendingFormSubmit = true;
+      formResult.textContent = "G\u00f6nderiliyor...";
+      formResult.classList.add("show");
+      submitButton.disabled = true;
+      submitButton.textContent = "G\u00f6nderiliyor";
+
+      clearTimeout(submitFallbackTimer);
+      submitFallbackTimer = window.setTimeout(() => {
+        if (pendingFormSubmit) {
+          finishFormSubmit("Tamam gibi. Bilgiler g\u00f6nderildi; sheet tarafina bir goz atabilirsin.");
+        }
+      }, 2200);
+    });
+
+    hiddenFormTarget.addEventListener("load", () => {
+      if (ignoreHiddenFrameBoot) {
+        ignoreHiddenFrameBoot = false;
+        return;
+      }
+
+      if (!pendingFormSubmit) {
+        return;
+      }
+
+      finishFormSubmit("Oldu. Bilgiler formuna gitti.");
     });
   </script>
 </body>
